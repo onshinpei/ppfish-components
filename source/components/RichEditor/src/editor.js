@@ -11,15 +11,15 @@ import Modal from '../../Modal/index.tsx';
 import Input from '../../Input/index.tsx';
 import Button from '../../Button/index.tsx';
 import message from '../../message/index.tsx';
-import CustomToolbar from './toolbar.js';
-import CustomSizeBlot from './formats/size.js';
-import EmojiBlot from './formats/emoji.js';
-import LinkBlot from './formats/link.js';
-import ImageBlot from './formats/image.js';
-import VideoBlot from './formats/video.js';
-import PlainClipboard from './modules/plainClipboard.js';
-import ImageDrop from './modules/imageDrop.js';
-import FileDrop from './modules/fileDrop.js';
+import CustomToolbar from './toolbar';
+import CustomSizeBlot from './formats/size';
+import EmojiBlot from './formats/emoji';
+import LinkBlot from './formats/link';
+import ImageBlot from './formats/image';
+import VideoBlot from './formats/video';
+import PlainClipboard from './modules/plainClipboard';
+import ImageDrop from './modules/imageDrop';
+import FileDrop from './modules/fileDrop';
 
 Quill.register(EmojiBlot);
 Quill.register(LinkBlot);
@@ -31,10 +31,10 @@ Quill.register('modules/fileDrop', FileDrop, true);
 Quill.register(Quill.import('attributors/style/align'), true);
 Quill.register(Quill.import('attributors/style/direction'), true);
 
-const getImageSize = function(url, callback) {
+const getImageSize = function (url, callback) {
   let newImage;
   newImage = document.createElement('img');
-  newImage.onload = function() {
+  newImage.onload = function () {
     callback(this.width, this.height);
   };
   newImage.src = url;
@@ -96,7 +96,7 @@ class RichEditor extends Component {
     insertVideoTip: (
       <React.Fragment>
         <span>1、单个视频不超过10M，支持MP4、3GP格式视频。</span>
-        <br/>
+        <br />
         <span>2、最佳显示高度不超过400px, 宽度不超过270px。</span>
       </React.Fragment>
     ),
@@ -111,8 +111,8 @@ class RichEditor extends Component {
     pastePlainText: false,
     toolbar: [
       ['link', 'bold', 'italic', 'underline'],
-      ['size'], ['color'], [{'align': ''}, {'align': 'center'}, {'align': 'right'}],
-      [{'list': 'ordered'}, {'list': 'bullet'}],
+      ['size'], ['color'], [{ 'align': '' }, { 'align': 'center' }, { 'align': 'right' }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
       ['emoji'], ['image'], ['clean', 'formatPainter']
     ],
     getPopupContainer: () => document.body
@@ -312,7 +312,7 @@ class RichEditor extends Component {
 
     // 处理定制的超链接
     Object.keys(customLink).forEach((moduleName) => {
-      this.handlers[`${moduleName}Entry`] = function() {
+      this.handlers[`${moduleName}Entry`] = function () {
         let range = this.quill.getSelection(),
           url = customLink[moduleName].url;
         if (range.length !== 0) {
@@ -438,11 +438,11 @@ class RichEditor extends Component {
     if (!value) return value;
 
     let fontTagStart = /(<\s*?)font(\s+)(.*?)(>)/gi,
-        fontTagEnd = /(<\s*?\/\s*?)font(\s*?>)/gi;
+      fontTagEnd = /(<\s*?\/\s*?)font(\s*?>)/gi;
 
     value = value.replace(fontTagStart, ($0, $1, $2, $3, $4) => {
       let tagStyle = ' style="',
-          tagAttr = ' ';
+        tagAttr = ' ';
 
       $3.replace(/(\w+-?\w+)\s*=\s*["']\s*(.*?)\s*["']/gi, ($0, $1, $2) => {
         let key = $1, value = $2;
@@ -455,14 +455,14 @@ class RichEditor extends Component {
           case 'size': {
             // font标签size属性的value是数字类型，取值范围是[1,7]。
             let size2pxMap = {
-                "1": '12px',
-                "2": '13px',
-                "3": '16px',
-                "4": '18px',
-                "5": '24px',
-                "6": '32px',
-                "7": '48px'
-              },
+              "1": '12px',
+              "2": '13px',
+              "3": '16px',
+              "4": '18px',
+              "5": '24px',
+              "6": '32px',
+              "7": '48px'
+            },
               sizeWithUnit = this.defaultFontSize,
               val = value && value.trim();
 
@@ -512,7 +512,7 @@ class RichEditor extends Component {
 
   handleLinkModalOk = () => {
     let el = this.linkModalInputRef.input,
-        val = el.value.trim();
+      val = el.value.trim();
 
     if (val) {
       if (val.length > 1000) {
@@ -673,10 +673,10 @@ class RichEditor extends Component {
         fileInput.classList.add('ql-image');
         fileInput.addEventListener('change', () => {
           if (fileInput.files != null && fileInput.files.length) {
-            for (let i=0, len = fileInput.files.length; i<len; i++) {
+            for (let i = 0, len = fileInput.files.length; i < len; i++) {
               let reader = new FileReader();
               reader.onload = (e) => {
-                getImageCb({src: e.target.result});
+                getImageCb({ src: e.target.result });
                 fileInput.value = "";
               };
               reader.readAsDataURL(fileInput.files[i]);
@@ -957,7 +957,7 @@ class RichEditor extends Component {
   };
 
   handleTooltipPosition(tooltip, reference) {
-    let left = reference.left + reference.width/2 - tooltip.root.offsetWidth/2;
+    let left = reference.left + reference.width / 2 - tooltip.root.offsetWidth / 2;
     // root.scrollTop should be 0 if scrollContainer !== root
     let top = reference.bottom + tooltip.quill.root.scrollTop;
     tooltip.root.style.left = left + 'px';
@@ -1039,11 +1039,11 @@ class RichEditor extends Component {
     // 区分默认的超链接按钮和自定义超链接按钮的高亮
     // if (nextSelection) {
     //   let curFormat;
-		// 	if (nextSelection.index > 0 && quill.getText(nextSelection.index - 1, 1)!='\n') {
-		// 		curFormat = quill.getFormat(nextSelection.index - 1, 1);
-		// 	} else {
-		// 		curFormat = quill.getFormat(nextSelection.index, 1);
-		// 	}
+    // 	if (nextSelection.index > 0 && quill.getText(nextSelection.index - 1, 1)!='\n') {
+    // 		curFormat = quill.getFormat(nextSelection.index - 1, 1);
+    // 	} else {
+    // 		curFormat = quill.getFormat(nextSelection.index, 1);
+    // 	}
 
     //   toolbarCtner.querySelector('.link-active')
     //   && toolbarCtner.querySelector('.link-active').classList.remove('link-active');
@@ -1058,7 +1058,7 @@ class RichEditor extends Component {
     //       toolbarCtner.querySelector(`.ql-${linkType}`)
     //       && toolbarCtner.querySelector(`.ql-${linkType}`).classList.add('link-active');
     //     }
-		// 	}
+    // 	}
     // }
   };
 
@@ -1088,7 +1088,7 @@ class RichEditor extends Component {
         let fontSize = customAttr[0].fontSize,
           hasMultiFontSize = false;
 
-        for (let i=0; i<len; i++) {
+        for (let i = 0; i < len; i++) {
           // 选中的富文本有多种字体大小时不高亮字号
           if (customAttr[i].fontSize != fontSize) {
             hasMultiFontSize = true;
@@ -1225,7 +1225,7 @@ class RichEditor extends Component {
             style={{ width: '434px' }}
             defaultValue={defaultInputLink}
           />
-          { insertLinkTip ? <div className="tip">{insertLinkTip}</div> : null }
+          {insertLinkTip ? <div className="tip">{insertLinkTip}</div> : null}
         </Modal>
         <Modal
           title="插入图片"
@@ -1235,7 +1235,7 @@ class RichEditor extends Component {
           onCancel={this.handleImageModalCancel}
         >
           <Button type="primary" onClick={this.handlePickLocalImage}>选择本地图片</Button>
-          { insertImageTip ? <div className="tip">{insertImageTip}</div> : null }
+          {insertImageTip ? <div className="tip">{insertImageTip}</div> : null}
         </Modal>
         <Modal
           title="插入附件"
@@ -1245,7 +1245,7 @@ class RichEditor extends Component {
           onCancel={this.handleAttachmentModalCancel}
         >
           <Button type="primary" onClick={this.handlePickLocalFile}>选择本地文件</Button>
-          { insertAttachmentTip ? <div className="tip">{insertAttachmentTip}</div> : null }
+          {insertAttachmentTip ? <div className="tip">{insertAttachmentTip}</div> : null}
         </Modal>
         <Modal
           title="插入视频"
@@ -1256,7 +1256,7 @@ class RichEditor extends Component {
           onCancel={this.handleVideoModalCancel}
         >
           <Radio.Group
-            style={{marginBottom: 24}}
+            style={{ marginBottom: 24 }}
             onChange={this.handleVideoTypeChange}
             value={curVideoType}
           >
@@ -1265,19 +1265,19 @@ class RichEditor extends Component {
           </Radio.Group>
           {
             curVideoType == "video_local" ?
-            <React.Fragment>
-              <Button
-                style={{display: 'block'}}
-                type="primary"
-                onClick={this.handlePickLocalVideo}
-              >选择本地视频</Button>
-              { insertVideoTip ? <div className="tip">{insertVideoTip}</div> : null }
-            </React.Fragment> :
-            <Input
-              ref={el => this.videoModalInputRef = el}
-              style={{ width: '434px' }}
-              placeholder="请输入视频链接URL"
-            />
+              <React.Fragment>
+                <Button
+                  style={{ display: 'block' }}
+                  type="primary"
+                  onClick={this.handlePickLocalVideo}
+                >选择本地视频</Button>
+                {insertVideoTip ? <div className="tip">{insertVideoTip}</div> : null}
+              </React.Fragment> :
+              <Input
+                ref={el => this.videoModalInputRef = el}
+                style={{ width: '434px' }}
+                placeholder="请输入视频链接URL"
+              />
           }
         </Modal>
         <CustomToolbar
@@ -1312,11 +1312,11 @@ class RichEditor extends Component {
         />
         {
           loading ?
-          <Spin style={{
-            position: 'absolute',
-            width: '100%',
-            background: 'rgba(255, 255, 255, 0.75)'
-          }}/> : null
+            <Spin style={{
+              position: 'absolute',
+              width: '100%',
+              background: 'rgba(255, 255, 255, 0.75)'
+            }} /> : null
         }
       </div>
     );
